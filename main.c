@@ -4,6 +4,8 @@
 
 int main(){
 
+  // Inicijalizacija
+
   FILE *fajl_tok;
   FILE *fajl_tok2;
   char ime_fajla[] = "tabela.txt";
@@ -11,10 +13,14 @@ int main(){
   char *opcija;
   char *ime;
   char *pointer;
+  char *domacin;
+  char *gost;
   size_t n_bajtova = 100;
   int br_klubova = 0;
   int poredak = 1;
   int j = 0;
+  int dom_gol;
+  int gost_gol;
   
   struct klub{
     
@@ -30,6 +36,8 @@ int main(){
 
 
   fajl_tok2 = fopen(ime_fajla2, "r");
+
+  // Ako postoje fajlovi "tabela.txt" i "fajl2.txt"
 
   if(fajl_tok2 == NULL){
 
@@ -80,6 +88,8 @@ int main(){
 
   while(1){
 
+    // Opcije
+
     printf("\n(1) Unos novog tima\n");
     printf("(2) Korigovanje parametara kluba\n");
     printf("(3) Pretrazi tabelu\n");
@@ -90,6 +100,8 @@ int main(){
     opcija = (char*)malloc(n_bajtova);
 
     getline(&opcija, &n_bajtova, stdin);
+
+    // Unos novog tima
 
     if(opcija[0] == '1'){
 
@@ -118,6 +130,90 @@ int main(){
 
     }
 
+    // Korigovanje parametara kluba
+
+    if(opcija[0] == '2'){
+
+      printf("\nUnesi domaci tim: ");
+
+      domacin = (char*)malloc(n_bajtova);
+
+      getline(&domacin, &n_bajtova, stdin);
+
+      domacin = strtok(domacin, "\n");
+
+      printf("\nUnesi gostujuci tim: ");
+
+      gost = (char*)malloc(n_bajtova);
+
+      getline(&gost, &n_bajtova, stdin);
+
+      gost = strtok(gost, "\n");
+
+      printf("\nUnesi rezultat utakmice u formatu 'x:y': ");
+
+      ime = (char*)malloc(n_bajtova);
+
+      getline(&ime, &n_bajtova, stdin);
+
+      sscanf(ime, "%d:%d", &dom_gol ,&gost_gol);
+
+      free(ime);
+
+      printf("%s i %s", domacin, gost);
+
+      for(int i = 0; i < br_klubova; i++){
+
+        // Domaci klub
+
+        if(strcmp(domacin, klubovi[i].ime_kluba) == 0){
+
+          klubovi[i].br_datih_golova += dom_gol;
+
+          klubovi[i].br_primljenih_golova += gost_gol;
+
+          klubovi[i].br_odigranih_utakmica++;
+
+          if(dom_gol > gost_gol){
+
+            klubovi[i].br_bodova += 3;
+          }
+
+          if(dom_gol == gost_gol){
+
+            klubovi[i].br_bodova++;
+          }
+
+        }
+
+        // Gostujuci klub
+
+        if(strcmp(gost, klubovi[i].ime_kluba) == 0){
+
+          klubovi[i].br_datih_golova += gost_gol;
+
+          klubovi[i].br_primljenih_golova += dom_gol;
+
+          klubovi[i].br_odigranih_utakmica++;
+
+          if(gost_gol > dom_gol){
+
+            klubovi[i].br_bodova += 3;
+          }
+
+          if(dom_gol == gost_gol){
+
+            klubovi[i].br_bodova += 1;
+          }
+
+        }
+
+      }
+
+    }
+
+    // Trenutno stanje tabele
+
     if(opcija[0] == '4'){
 
       printf("\nPOREDAK        TIM        OU        G        B\n");
@@ -125,15 +221,17 @@ int main(){
       for(int i = 0; i < br_klubova; i++){
       
         printf("%d.             %s"
-               "     %d:%d"
-               "        %d"
+               "     %d"
+               "        %d:%d"
                "      %d\n", poredak, klubovi[i].ime_kluba, klubovi[i].br_odigranih_utakmica, klubovi[i].br_datih_golova, klubovi[i].br_primljenih_golova, klubovi[i].br_bodova);
 
         poredak++;
 
-      } // for()
+      }
 
-    } // if(opcija[0] == '4')
+    }
+
+    // Izlaz
 
     if(opcija[0] == '5'){
 
