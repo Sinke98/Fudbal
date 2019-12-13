@@ -15,12 +15,15 @@ int main(){
   char *pointer;
   char *domacin;
   char *gost;
-  size_t n_bajtova = 100;
+  char znak;
+  size_t n_bajtova = 15;
   int br_klubova = 0;
   int poredak = 1;
   int j = 0;
   int dom_gol;
   int gost_gol;
+  int x;
+  int x1, y1;
   
   struct klub{
     
@@ -32,59 +35,9 @@ int main(){
 
   };
 
-  struct klub klubovi[20];
+  struct klub klubovi[10];
 
-
-  fajl_tok2 = fopen(ime_fajla2, "r");
-
-  // Ako postoje fajlovi "tabela.txt" i "fajl2.txt"
-
-  if(fajl_tok2 == NULL){
-
-    printf("\nProblem pri otvaranju fajla 'fajl2.txt'\n");
-  }
-  else{
-
-    ime = (char*)malloc(n_bajtova);
-
-    getline(&ime, &n_bajtova, fajl_tok2);
-
-    if(fclose(fajl_tok2)){
-
-      printf("\nProblem pri zatvaranju fajla 'fajl2.txt'\n");
-    }
-
-    sscanf(ime, "%d,%d", &br_klubova, &poredak);
-
-    free(ime);
-
-    fajl_tok = fopen(ime_fajla, "r");
-
-    if(fajl_tok == NULL){
-
-      printf("\nProblem pri otvaranju fajla 'tabela.txt'\n");
-    }
-    else{
-
-      ime = (char*)malloc(n_bajtova);
-
-      while(getline(&ime, &n_bajtova, fajl_tok) != -1){
-
-        sscanf(ime, "%s,%d,%d,%d,%d", klubovi[j].ime_kluba, &klubovi[j].br_bodova, &klubovi[j].br_datih_golova, &klubovi[j].br_primljenih_golova, &klubovi[j].br_odigranih_utakmica);
-
-        j++;
-
-        free(ime);
-      }
-
-      if(fclose(fajl_tok)){
-
-        printf("\nProblem pri zatvaranju fajla 'tabela.txt'\n");
-      }
-
-    }
-
-  }
+  struct klub temp;
 
   while(1){
 
@@ -111,11 +64,11 @@ int main(){
 
       getline(&ime, &n_bajtova, stdin);
 
-      pointer = strtok(ime, "\n");
+      ime = strtok(ime, "\n");
 
       struct klub k1;
 
-      strcpy(k1.ime_kluba, pointer);
+      strcpy(k1.ime_kluba, ime);
 
       k1.br_bodova = 0;
       k1.br_odigranih_utakmica = 0;
@@ -159,8 +112,6 @@ int main(){
       sscanf(ime, "%d:%d", &dom_gol ,&gost_gol);
 
       free(ime);
-
-      printf("%s i %s", domacin, gost);
 
       for(int i = 0; i < br_klubova; i++){
 
@@ -212,9 +163,79 @@ int main(){
 
     }
 
+    // Pretraga po broju osvojenih bodova
+
+    if(opcija[0] == '3'){
+
+      printf("Pretrazi klubove po broju osvojenih bodova"
+             " u formatu 'x,>' ili 'x,<': ");
+
+      ime = (char*)malloc(n_bajtova);
+
+      getline(&ime, &n_bajtova, stdin);
+
+      sscanf(ime, "%d,%c", &x, &znak);
+
+      free(ime);
+
+      printf("\nTIM       BODOVI\n");
+
+      if(znak == '<'){
+
+        for(int i = 0; i < br_klubova; i++){
+
+          if(klubovi[i].br_bodova < x){
+
+            printf("%s      %d\n", klubovi[i].ime_kluba,
+                                   klubovi[i].br_bodova);
+          }
+
+        }
+
+      }
+
+      if(znak == '>'){
+
+        for(int i = 0; i < br_klubova; i++){
+
+          if(klubovi[i].br_bodova > x){
+
+            printf("%s      %d\n", klubovi[i].ime_kluba,
+                                   klubovi[i].br_bodova);
+          }
+
+        }
+
+      }
+
+    }
+
     // Trenutno stanje tabele
 
     if(opcija[0] == '4'){
+
+      poredak = 1;
+
+      for(int i = 0; i < br_klubova - 1; i++){
+
+        for(j = 0; j < br_klubova - i - 1; j++){
+
+          x1 = klubovi[j].br_datih_golova - klubovi[j].br_primljenih_golova;
+          y1 = klubovi[j+1].br_datih_golova - klubovi[j+1].br_primljenih_golova;
+
+          if(x1 < y1){
+
+            //Zameni(klubovi[j], klubovi[j+1]);
+            
+            temp = klubovi[j];
+            klubovi[j] = klubovi[j+1];
+            klubovi[j+1] = temp;
+
+          }
+
+        } 
+
+      } 
 
       printf("\nPOREDAK        TIM        OU        G        B\n");
       
@@ -234,37 +255,6 @@ int main(){
     // Izlaz
 
     if(opcija[0] == '5'){
-
-      fajl_tok = fopen(ime_fajla, "a+");
-
-      if(fajl_tok == NULL){
-
-        printf("Problem pri otvaranju fajla 'tabela.txt'\n");
-      }
-
-      for(int i = 0; i < br_klubova; i++){
-
-        fprintf(fajl_tok, "%s,%d,%d,%d,%d\n", klubovi[i].ime_kluba, klubovi[i].br_bodova, klubovi[i].br_datih_golova, klubovi[i].br_primljenih_golova, klubovi[i].br_odigranih_utakmica);
-      } // for()
-
-      if(fclose(fajl_tok)){
-
-        printf("Problem pri zatvaranju fajla 'tabela.txt'\n");
-      }
-
-      fajl_tok2 = fopen(ime_fajla2, "a+");
-
-      if(fajl_tok2 == NULL){
-
-        printf("Problem pri otvaranju fajla 'tabela.txt'\n");
-      }
-
-      fprintf(fajl_tok2, "%d,%d\n", br_klubova, poredak);
-
-      if(fclose(fajl_tok2)){
-
-        printf("Problem pri zatvaranju fajla 'fajl_tok2'\n");
-      }
 
       break;
 
