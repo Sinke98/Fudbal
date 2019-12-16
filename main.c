@@ -39,6 +39,60 @@ int main(){
 
   struct klub temp;
 
+  // Provera da li postoje odgovarajuci fajlovi
+  
+  fajl_tok2 = fopen(ime_fajla2, "r");
+
+  if(fajl_tok2 == NULL){
+
+    printf("\nProblem pri otvaranju 'fajl2.txt'!\n");
+  }
+  else{
+
+    ime = (char*)malloc(n_bajtova);
+
+    getline(&ime, &n_bajtova, fajl_tok2);
+
+    br_klubova = atoi(ime);
+
+    free(ime);
+
+    if(fclose(fajl_tok2)){
+
+      printf("\nProblem pri zatvaranju fajla 'fajl2.txt'!\n");
+    }
+
+  }
+
+  // tabela.txt
+
+  fajl_tok = fopen(ime_fajla, "r");
+
+  if(fajl_tok == NULL){
+
+    printf("\nProblem pri otvaranju fajla 'tabela.txt'!\n");
+  }
+  else{
+  
+   for(int i = 0; i < br_klubova; i++){
+
+      ime = (char*)malloc(n_bajtova);
+
+      getline(&ime, &n_bajtova, fajl_tok);
+
+      sscanf(ime, "%s %d %d %d %d", klubovi[i].ime_kluba, &klubovi[i].br_odigranih_utakmica, &klubovi[i].br_datih_golova, &klubovi[i].br_primljenih_golova, &klubovi[i].br_bodova);
+
+    free(ime);
+    
+   }
+
+   if(fclose(fajl_tok)){
+
+      printf("\nProblem pri zatvaranju fajla 'tabela.txt'!\n");
+   } 
+
+  }
+
   while(1){
 
     // Opcije
@@ -255,6 +309,37 @@ int main(){
     // Izlaz
 
     if(opcija[0] == '5'){
+
+      fajl_tok2 = fopen(ime_fajla2, "w");
+
+      if(fajl_tok2 == NULL){
+
+        printf("\nProblem pri otvaranju fajla 'fajl2.txt'!\n");
+      }
+
+      fprintf(fajl_tok2, "%d\n", br_klubova);
+
+      if(fclose(fajl_tok2)){
+
+        printf("\nProblem pri zatvaranju fajla 'fajl2.txt'!\n");
+      }
+
+      fajl_tok = fopen(ime_fajla, "w");
+
+      if(fajl_tok == NULL){
+
+        printf("\nProblem pri otvaranju fajla 'tabela.txt'!\n");
+      }
+
+      for(int i = 0; i < br_klubova; i++){
+
+        fprintf(fajl_tok, "%s %d %d %d %d\n", klubovi[i].ime_kluba, klubovi[i].br_odigranih_utakmica, klubovi[i].br_datih_golova, klubovi[i].br_primljenih_golova, klubovi[i].br_bodova);
+      }
+
+      if(fclose(fajl_tok)){
+
+        printf("\nProblem pri zatvaranju fajla 'tabela.txt'!\n");
+      }
 
       break;
 
